@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Log in | Master Chess</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <h2>Welcome back to <span style="color:var(--primary)">Master Chess</span></h2>
+      <p class="muted center" style="margin-bottom:20px">Log in to continue playing.</p>
+
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input class="input" id="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input class="input" id="password" type="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn btn-primary btn-block" id="submit-btn" type="submit">Log in</button>
+      </form>
+
+      <p class="switch"><a href="#" id="forgot">Forgot password?</a></p>
+      <p class="switch muted">New here? <a href="register.html">Create an account</a></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { loginUser, resetPassword, redirectIfLoggedIn, showToast, errorText } from "./js/auth.js";
+
+    redirectIfLoggedIn();
+
+    const form = document.getElementById("login-form");
+    const btn = document.getElementById("submit-btn");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (!email || !password) {
+        showToast("Enter your email and password.", "error");
+        return;
+      }
+
+      btn.disabled = true;
+      btn.textContent = "Logging in...";
+      try {
+        await loginUser(email, password);
+        window.location.href = "dashboard.html";
+      } catch (err) {
+        showToast(errorText(err), "error");
+        btn.disabled = false;
+        btn.textContent = "Log in";
+      }
+    });
+
+    document.getElementById("forgot").addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      try {
+        await resetPassword(email);
+        showToast("If that email is registered, a reset link was sent.", "success");
+      } catch (err) {
+        showToast(errorText(err), "error");
+      }
+    });
+  </script>
+</body>
+</html>
