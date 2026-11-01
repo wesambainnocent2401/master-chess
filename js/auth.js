@@ -51,7 +51,7 @@ function friendlyError(err) {
     "auth/weak-password": "Password is too weak.",
     "username-taken": "That username is already taken."
   };
-  return map[err.code || err.message] || "Something went wrong. Try again.";
+  return map[err.code || err.message] || ("Error: " + (err.code || err.message));
 }
 
 /* ---------- Register ---------- */
