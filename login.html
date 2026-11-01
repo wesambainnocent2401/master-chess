@@ -9,6 +9,15 @@
 </head>
 <body>
   <div class="auth-wrap">
+    <script>
+  window.addEventListener("error", function (e) {
+    alert("Error: " + e.message);
+  });
+  window.addEventListener("unhandledrejection", function (e) {
+    var r = e.reason;
+    alert("Promise error: " + (r && (r.code || r.message) || r));
+  });
+    </script>
     <div class="card auth-card">
       <h2>Welcome back to <span style="color:var(--primary)">Master Chess</span></h2>
       <p class="muted center" style="margin-bottom:20px">Log in to continue playing.</p>
