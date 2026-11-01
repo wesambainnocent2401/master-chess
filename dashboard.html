@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard | Master Chess</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link relplay chsheet" href="css/components.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a class="logo" href="dashboard.html">Master <span>Chess</span></a>
+      <div class="nav-links">
+        <button class="btn btn-secondary" id="theme-btn" type="button">Theme</button>
+        <button class="btn btn-danger" id="logout-btn" type="button">Log out</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container page">
+    <div id="loading" class="center" style="padding:40px"><div class="spinner" style="margin:auto"></div></div>
+
+    <div id="content" class="hidden">
+      <h1 id="welcome"></h1>
+      <p class="muted">Ready for your next game?</p>
+
+      <div id="verify-banner" class="card section hidden">
+        Please verify your email. We sent you a link when you registered.
+      </div>
+
+      <div class="grid section">
+        <div class="card"><p class="muted">Rating</p><div class="stat" id="rating">0</div></div>
+        <div class="card"><p class="muted">Games played</p><div class="stat" id="played">0</div></div>
+        <div class="card"><p class="muted">Wins / Losses / Draws</p><div class="stat" id="record">0 / 0 / 0</div></div>
+        <div class="card"><p class="muted">Win rate</p><div class="stat" id="winrate">0%</div></div>
+      </div>
+
+      <div class="card section">
+        <h2>Play</h2>
+        <div style="display:flex; gap:12px; flex-wrap:wrap">
+          <button class="btn btn-primary" type="button" disabled>Play computer (Phase 3)</button>
+          <button class="btn btn-secondary" type="button" disabled>Play online (Phase 5)</button>
+        </div>
+        <p class="muted" style="margin-top:10px">These unlock as we build the chess board and engine.</p>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
