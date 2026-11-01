@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Play | Master Chess</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/board.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a class="logo" href="dashboard.html">Master <span>Chess</span></a>
+      <div class="nav-links">
+        <a class="btn btn-secondary" href="dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="play-layout">
+    <div class="board-wrap">
+      <div class="captured" id="captured-top"></div>
+      <div id="board" aria-label="Chess board"></div>
+      <div class="captured" id="captured-bottom"></div>
+    </div>
+
+    <div class="side-panel">
+      <div class="status-bar" id="status">Loading...</div>
+
+      <div class="controls">
+        <button class="btn btn-primary" id="btn-new" type="button">New game</button>
+        <button class="btn btn-secondary" id="btn-undo" type="button">Undo</button>
+        <button class="btn btn-secondary" id="btn-flip" type="button">Flip</button>
+        <button class="btn btn-secondary" id="btn-full" type="button">Full screen</button>
+        <button class="btn btn-danger" id="btn-resign" type="button">Resign</button>
+      </div>
+
+      <div class="move-list" id="move-list"></div>
+    </div>
+  </main>
+
+  <div class="modal-backdrop hidden" id="promo-modal">
+    <div class="modal">
+      <h3>Promote pawn to</h3>
+      <div class="promo-choices" id="promo-choices"></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module" src="js/play.js"></script>
+</body>
+</html>
