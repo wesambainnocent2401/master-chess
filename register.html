@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register | Master Chess</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <h2>Create your <span style="color:var(--primary)">Master Chess</span> account</h2>
+      <p class="muted center" style="margin-bottom:20px">Play, learn and climb the ranks.</p>
+
+      <form id="register-form" novalidate>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input class="input" id="username" type="text" autocomplete="username" maxlength="20" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input class="input" id="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input class="input" id="password" type="password" autocomplete="new-password" required>
+        </div>
+        <div class="form-group">
+          <label for="confirm">Confirm password</label>
+          <input class="input" id="confirm" type="password" autocomplete="new-password" required>
+        </div>
+        <button class="btn btn-primary btn-block" id="submit-btn" type="submit">Create account</button>
+      </form>
+
+      <p class="switch muted">Already have an account? <a href="login.html">Log in</a></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { registerUser, redirectIfLoggedIn, showToast, errorText } from "./js/auth.js";
+
+    const form = document.getElementById("register-form");
+    const btn = document.getElementById("submit-btn");
+    let registering = false;
+
+    // Only redirect already-logged-in users when they are not mid-registration
+    import("https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js").then(({ onAuthStateChanged }) => {
+      import("./js/firebase.js").then(({ auth }) => {
+        onAuthStateChanged(auth, (user) => {
+          if (user && !registering) window.location.href = "dashboard.html";
+        });
+      });
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      registering = true;
+      btn.disabled = true;
+      btn.textContent = "Creating account...";
+
+      try {
+        await registerUser({
+          username: document.getElementById("username").value.trim(),
+          email: document.getElementById("email").value.trim(),
+          password: document.getElementById("password").value,
+          confirm: document.getElementById("confirm").value
+        });
+        showToast("Account created! Check your email to verify.", "success");
+        setTimeout(() => (window.location.href = "dashboard.html"), 1500);
+      } catch (err) {
+        registering = false;
+        showToast(errorText(err), "error");
+        btn.disabled = false;
+        btn.textContent = "Create account";
+      }
+    });
+  </script>
+</body>
+</html>
