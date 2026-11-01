@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Master Chess | Play, Learn, Win</title>
+  <meta name="description" content="Master Chess: play chess, solve puzzles and learn from the basics to advanced.">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a class="logo" href="index.html">Master <span>Chess</span></a>
+      <div class="nav-links">
+        <a class="btn btn-secondary" href="login.html">Log in</a>
+        <a class="btn btn-primary" href="register.html">Sign up</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero container">
+    <h1>Play chess. <span style="color:var(--primary)">Master the game.</span></h1>
+    <p>Challenge the computer, solve puzzles, and learn from beginner to advanced, all in one place.</p>
+    <div class="actions">
+      <a class="btn btn-primary btn-lg" href="register.html">Get started free</a>
+      <a class="btn btn-secondary btn-lg" href="login.html">I have an account</a>
+    </div>
+  </header>
+
+  <section class="features container">
+    <div class="grid">
+      <div class="card"><div class="feature-icon">♟️</div><h3>Play online</h3><p class="muted">Match with players around the world.</p></div>
+      <div class="card"><div class="feature-icon">🤖</div><h3>Vs computer</h3><p class="muted">Six difficulty levels, from Beginner to Super Legend.</p></div>
+      <div class="card"><div class="feature-icon">🧩</div><h3>Puzzles</h3><p class="muted">Sharpen your tactics every day.</p></div>
+      <div class="card"><div class="feature-icon">📚</div><h3>Chess Academy</h3><p class="muted">Structured lessons for every level.</p></div>
+    </div>
+  </section>
+
+  <script>
+    document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+  </script>
+</body>
+</html>
