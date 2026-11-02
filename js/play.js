@@ -4,6 +4,7 @@ import { requireAuth, showToast } from "./auth.js";
 import { ChessBoard, glyph } from "./board.js";
 
 document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+initBoardThemes(document.getElementById("board-theme"));
 
 const game = new Chess();
 let lastMove = null;
