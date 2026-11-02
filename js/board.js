@@ -80,7 +80,7 @@ export class ChessBoard {
         if (piece) {
           const span = document.createElement("span");
           span.className = "piece " + piece.color;
-          span.textContent = glyph(piece.type);
+          span.innerHTML = pieceSVG(piece.color, piece.type);
           sq.appendChild(span);
         }
 
@@ -138,10 +138,9 @@ export class ChessBoard {
       ["q", "r", "b", "n"].forEach((type) => {
         const btn = document.createElement("button");
         btn.type = "button";
-        btn.textContent = glyph(type);
-        btn.style.background = "#ebecd0";
-        btn.style.color = color === "w" ? "#fff" : "#111";
-        btn.style.textShadow = color === "w" ? "0 0 2px #000, 0 0 3px #000" : "none";
+        btn.innerHTML = pieceSVG(color, type);
+        btn.style.background = "#e9e4d4";
+        btn.style.padding = "4px";
         btn.addEventListener("click", () => {
           modal.classList.add("hidden");
           resolve(type);
