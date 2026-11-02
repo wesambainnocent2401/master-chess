@@ -9,6 +9,7 @@ import {
 } from "./games.js";
 
 document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
+initBoardThemes(document.getElementById("board-theme"));
 
 const params = new URLSearchParams(window.location.search);
 const gameId = params.get("game");
