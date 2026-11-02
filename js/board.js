@@ -1,4 +1,5 @@
 const GLYPH = { k: "♚", q: "♛", r: "♜", b: "♝", n: "♞", p: "♟" };
+import { pieceSVG } from "./pieces.js";
 const FILES = "abcdefgh";
 
 export function glyph(type) {
