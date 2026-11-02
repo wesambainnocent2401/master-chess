@@ -133,3 +133,18 @@
   background: var(--surface-2);
   cursor: pointer;
 }
+/* New look */
+#board { border: 4px solid var(--surface-2); border-radius: 12px; box-shadow: var(--shadow); }
+.sq.light { background: #e9e4d4; }
+.sq.dark { background: #4d7c66; }
+.sq.light .coord { color: #4d7c66; }
+.sq.dark .coord { color: #e9e4d4; }
+.sq.selected { background: #f5d76e !important; }
+.sq.last-move { box-shadow: inset 0 0 0 100px rgba(245, 185, 66, 0.4); }
+
+.piece { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.piece svg { width: 90%; height: 90%; filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.35)); }
+.promo-choices button svg { width: 100%; height: 100%; }
+
+.status-bar { background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); }
+.move-list, .card { border-radius: var(--radius); }
