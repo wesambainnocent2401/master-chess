@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Play Computer | Master Chess</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/board.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a class="logo" href="dashboard.html">Master <span>Chess</span></a>
+      <div class="nav-links">
+        <a class="btn btn-secondary" href="dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Setup -->
+  <main class="container page hidden" id="setup">
+    <div class="card auth-card" style="margin:0 auto">
+      <h2>Play the computer</h2>
+      <p class="muted" style="margin-bottom:16px">Choose a level and your color.</p>
+      <div class="form-group">
+        <label for="level-select">Difficulty</label>
+        <select class="input" id="level-select"></select>
+      </div>
+      <div class="form-group">
+        <label for="color-select">I want to play</label>
+        <select class="input" id="color-select">
+          <option value="random">Random color</option>
+          <option value="w">White</option>
+          <option value="b">Black</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-block" id="btn-start" type="button">Start game</button>
+    </div>
+  </main>
+
+  <!-- Game -->
+  <main class="play-layout hidden" id="game-view">
+    <div class="board-wrap">
+      <div class="status-bar" id="opponent-bar" style="margin-bottom:8px"></div>
+      <div class="captured" id="captured-top"></div>
+      <div id="board" aria-label="Chess board"></div>
+      <div class="captured" id="captured-bottom"></div>
+      <div class="status-bar" id="me-bar" style="margin-top:8px"></div>
+    </div>
+
+    <div class="side-panel">
+      <div class="status-bar" id="status">Loading...</div>
+
+      <div class="controls">
+        <select class="input" id="board-theme" aria-label="Board colors" style="flex:1 1 100%"></select>
+        <button class="btn btn-secondary" id="btn-undo" type="button">Undo</button>
+        <button class="btn btn-secondary" id="btn-flip" type="button">Flip</button>
+        <button class="btn btn-danger" id="btn-resign" type="button">Resign</button>
+        <button class="btn btn-primary hidden" id="btn-retry" type="button">Let computer move</button>
+        <a class="btn btn-secondary" href="computer.html">New game</a>
+      </div>
+
+      <div class="move-list" id="move-list"></div>
+    </div>
+  </main>
+
+  <div class="modal-backdrop hidden" id="promo-modal">
+    <div class="modal">
+      <h3>Promote pawn to</h3>
+      <div class="promo-choices" id="promo-choices"></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module" src="js/computer.js"></script>
+</body>
+</html>
