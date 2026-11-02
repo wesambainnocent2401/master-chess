@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dashboard | Master Chess</title>
   <link rel="stylesheet" href="css/base.css">
-  <link relplay chsheet" href="css/components.css">
+  <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
   <nav class="navbar">
@@ -22,28 +22,45 @@
     <div id="loading" class="center" style="padding:40px"><div class="spinner" style="margin:auto"></div></div>
 
     <div id="content" class="hidden">
-      <h1 id="welcome"></h1>
-      <p class="muted">Ready for your next game?</p>
+      <div class="welcome-row">
+        <div class="avatar">♞</div>
+        <div>
+          <h1 id="welcome"></h1>
+          <p class="muted">Ready for your next game?</p>
+        </div>
+      </div>
 
-      <div id="verify-banner" class="card section hidden">
+      <div id="verify-banner" class="notice section hidden">
         Please verify your email. We sent you a link when you registered.
       </div>
 
       <div class="grid section">
-        <div class="card"><p class="muted">Rating</p><div class="stat" id="rating">0</div></div>
-        <div class="card"><p class="muted">Games played</p><div class="stat" id="played">0</div></div>
-        <div class="card"><p class="muted">Wins / Losses / Draws</p><div class="stat" id="record">0 / 0 / 0</div></div>
-        <div class="card"><p class="muted">Win rate</p><div class="stat" id="winrate">0%</div></div>
+        <div class="card stat-card"><div class="label">Rating</div><div class="stat" id="rating">0</div></div>
+        <div class="card stat-card"><div class="label">Games</div><div class="stat" id="played">0</div></div>
+        <div class="card stat-card"><div class="label">W / L / D</div><div class="stat" id="record">0 / 0 / 0</div></div>
+        <div class="card stat-card"><div class="label">Win rate</div><div class="stat" id="winrate">0%</div></div>
       </div>
 
-      <div class="card section">
-        <h2>Play</h2>
-        <div style="display:flex; gap:12px; flex-wrap:wrap">
-          <a class="btn btn-primary" href="play.html">Play chess (2 players)</a>
-          
-          <a class="btn btn-secondary" href="online.html">Play online</a>
+      <h2 class="section">Play</h2>
+      <div class="play-grid">
+        <div class="card play-card">
+          <div class="icon">🌍</div>
+          <h3>Play online</h3>
+          <p>Create a game and share the link with a friend.</p>
+          <a class="btn btn-primary" href="online.html">Play online</a>
         </div>
-        <p class="muted" style="margin-top:10px">These unlock as we build the chess board and engine.</p>
+        <div class="card play-card">
+          <div class="icon">👥</div>
+          <h3>Two players</h3>
+          <p>Play on one device, passing the phone back and forth.</p>
+          <a class="btn btn-secondary" href="play.html">Play locally</a>
+        </div>
+        <div class="card play-card">
+          <div class="icon">🤖</div>
+          <h3>Vs computer</h3>
+          <p>Six difficulty levels, from Beginner to Super Legend.</p>
+          <span class="badge">Coming soon</span>
+        </div>
       </div>
     </div>
   </main>
