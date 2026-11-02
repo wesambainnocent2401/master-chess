@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Play Online | Master Chess</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/board.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container">
+      <a class="logo" href="dashboard.html">Master <span>Chess</span></a>
+      <div class="nav-links">
+        <a class="btn btn-secondary" href="dashboard.html">Dashboard</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Lobby: create a game -->
+  <main class="container page hidden" id="lobby">
+    <div class="card auth-card" style="margin:0 auto">
+      <h2>Play online</h2>
+      <p class="muted" style="margin-bottom:16px">Create a game, then share the link with a friend.</p>
+      <div class="form-group">
+        <label for="color-choice">I want to play</label>
+        <select class="input" id="color-choice">
+          <option value="random">Random color</option>
+          <option value="w">White</option>
+          <option value="b">Black</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-block" id="btn-create" type="button">Create game</button>
+    </div>
+  </main>
+
+  <!-- Game view -->
+  <main class="play-layout hidden" id="game-view">
+    <div class="board-wrap">
+      <div class="status-bar" id="opponent-bar" style="margin-bottom:8px"></div>
+      <div class="captured" id="captured-top"></div>
+      <div id="board" aria-label="Chess board"></div>
+      <div class="captured" id="captured-bottom"></div>
+      <div class="status-bar" id="me-bar" style="margin-top:8px"></div>
+    </div>
+
+    <div class="side-panel">
+      <div class="status-bar" id="status">Loading...</div>
+
+      <div class="card hidden" id="share-box">
+        <p class="muted" style="margin-bottom:8px">Waiting for an opponent. Send them this link:</p>
+        <input class="input" id="share-link" type="text" readonly>
+        <button class="btn btn-primary btn-block" id="btn-copy" type="button" style="margin-top:10px">Copy link</button>
+      </div>
+
+      <div class="card hidden" id="draw-box">
+        <p id="draw-text" style="margin-bottom:10px"></p>
+        <button class="btn btn-primary" id="btn-accept-draw" type="button">Accept draw</button>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="btn-flip" type="button">Flip</button>
+        <button class="btn btn-secondary" id="btn-draw" type="button">Offer draw</button>
+        <button class="btn btn-danger" id="btn-resign" type="button">Resign</button>
+        <a class="btn btn-secondary" href="online.html">New game</a>
+      </div>
+
+      <div class="move-list" id="move-list"></div>
+    </div>
+  </main>
+
+  <div class="modal-backdrop hidden" id="promo-modal">
+    <div class="modal">
+      <h3>Promote pawn to</h3>
+      <div class="promo-choices" id="promo-choices"></div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script type="module" src="js/online.js"></script>
+</body>
+</html>
