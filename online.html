@@ -23,6 +23,7 @@
     <div class="card auth-card" style="margin:0 auto">
       <h2>Play online</h2>
       <p class="muted" style="margin-bottom:16px">Create a game, then share the link with a friend.</p>
+
       <div class="form-group">
         <label for="color-choice">I want to play</label>
         <select class="input" id="color-choice">
@@ -31,6 +32,12 @@
           <option value="b">Black</option>
         </select>
       </div>
+
+      <div class="form-group">
+        <label for="time-select">Time control</label>
+        <select class="input" id="time-select"></select>
+      </div>
+
       <button class="btn btn-primary btn-block" id="btn-create" type="button">Create game</button>
     </div>
   </main>
@@ -38,11 +45,17 @@
   <!-- Game view -->
   <main class="play-layout hidden" id="game-view">
     <div class="board-wrap">
-      <div class="status-bar" id="opponent-bar" style="margin-bottom:8px"></div>
+      <div class="status-bar player-bar" style="margin-bottom:8px">
+        <span id="opponent-name"></span>
+        <span class="clock" id="opponent-clock"></span>
+      </div>
       <div class="captured" id="captured-top"></div>
       <div id="board" aria-label="Chess board"></div>
       <div class="captured" id="captured-bottom"></div>
-      <div class="status-bar" id="me-bar" style="margin-top:8px"></div>
+      <div class="status-bar player-bar" style="margin-top:8px">
+        <span id="me-name"></span>
+        <span class="clock" id="me-clock"></span>
+      </div>
     </div>
 
     <div class="side-panel">
