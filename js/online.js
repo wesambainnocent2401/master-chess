@@ -1,25 +1,28 @@
-import { initBoardThemes } from "./themes.js";
 import { Chess } from "https://cdn.jsdelivr.net/npm/chess.js@1.0.0-beta.8/+esm";
-
 import { requireAuth, showToast } from "./auth.js";
 import { ChessBoard, glyph } from "./board.js";
+import { initBoardThemes } from "./themes.js";
 import {
-  createGame, joinGame, watchGame, sendMove,
-  resignGame, offerDraw, acceptDraw, myColor
+  TIME_CONTROLS, createGame, joinGame, watchGame, sendMove,
+  resignGame, offerDraw, acceptDraw, flagTimeout, myColor
 } from "./games.js";
 
+const $ = (id) => document.getElementById(id);
+
 document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
-initBoardThemes(document.getElementById("board-theme"));
+initBoardThemes($("board-theme"));
 
 const params = new URLSearchParams(window.location.search);
 const gameId = params.get("game");
-const $ = (id) => document.getElementById(id);
 
-let data = null;   // latest game data from Firestore
-let me = null;     // "w", "b", or null (spectator)
+let data = null;          // latest game data from Firestore
+let me = null;            // "w", "b", or null (spectator)
 let uid = null;
 let firstLoad = true;
 let started = false;
+let turnKey = null;       // changes whenever the clock restarts
+let turnStartedLocal = Date.now();
+let lastFlagTry = 0;
 
 const board = new ChessBoard($("board"), {
   onMove: handleMove,
@@ -29,12 +32,22 @@ const board = new ChessBoard($("board"), {
 /* ---------- Lobby ---------- */
 function startLobby() {
   $("lobby").classList.remove("hidden");
+
+  TIME_CONTROLS.forEach((tc) => {
+    const option = document.createElement("option");
+    option.value = tc.id;
+    option.textContent = tc.label;
+    $("time-select").appendChild(option);
+  });
+  $("time-select").value = "10+0";
+
   $("btn-create").addEventListener("click", async () => {
     const btn = $("btn-create");
     btn.disabled = true;
     btn.textContent = "Creating...";
     try {
-      const id = await createGame($("color-choice").value);
+      const tc = TIME_CONTROLS.find((t) => t.id === $("time-select").value) || TIME_CONTROLS[0];
+      const id = await createGame($("color-choice").value, tc);
       window.location.href = "online.html?game=" + id;
     } catch (err) {
       showToast("Could not create the game.", "error");
@@ -63,11 +76,18 @@ async function startGame() {
     }
   }
   watchGame(gameId, onGameData, () => showToast("Lost connection to the game.", "error"));
+  setInterval(tick, 250);
 }
 
 async function handleMove(from, to, promotion) {
+  if (!data || data.status !== "active") return;
+  if (data.timeBase > 0 && remaining(me) <= 0) {
+    showToast("Your time is up.", "error");
+    return;
+  }
+  const elapsed = Date.now() - turnStartedLocal;
   try {
-    await sendMove(gameId, data, from, to, promotion);
+    await sendMove(gameId, data, from, to, promotion, elapsed);
   } catch (err) {
     showToast("Move failed. Try again.", "error");
   }
@@ -76,6 +96,19 @@ async function handleMove(from, to, promotion) {
 function onGameData(d) {
   data = d;
   me = myColor(d, uid);
+
+  // Work out when the current turn's clock started
+  const key = d.clockStart
+    ? String(d.clockStart.toMillis())
+    : "pending-" + d.moves.length + "-" + d.status;
+  if (key !== turnKey) {
+    turnKey = key;
+    let offset = 0;
+    if (firstLoad && d.clockStart) {
+      offset = Math.min(Math.max(Date.now() - d.clockStart.toMillis(), 0), 6 * 3600 * 1000);
+    }
+    turnStartedLocal = Date.now() - offset;
+  }
 
   const chess = new Chess(d.fen);
   board.setGame(chess);
@@ -94,6 +127,54 @@ function onGameData(d) {
   renderMoves();
   renderCaptured();
   renderBoxes();
+  renderClocks();
+}
+
+/* ---------- Clocks ---------- */
+function remaining(color) {
+  const base = color === "w" ? data.whiteTime : data.blackTime;
+  if (data.status === "active" && data.turn === color && data.timeBase > 0) {
+    return base - (Date.now() - turnStartedLocal);
+  }
+  return base;
+}
+
+function formatTime(ms) {
+  const total = Math.max(0, Math.ceil(ms / 1000));
+  const m = Math.floor(total / 60);
+  const s = total % 60;
+  return m + ":" + (s < 10 ? "0" : "") + s;
+}
+
+function setClock(el, color) {
+  const ms = remaining(color);
+  const active = data.status === "active" && data.turn === color;
+  el.textContent = formatTime(ms);
+  el.classList.toggle("active", active);
+  el.classList.toggle("low", active && ms < 20000);
+}
+
+function renderClocks() {
+  if (!data || !(data.timeBase > 0)) {
+    $("opponent-clock").textContent = "";
+    $("me-clock").textContent = "";
+    return;
+  }
+  const topColor = board.flipped ? "w" : "b";
+  const bottomColor = topColor === "w" ? "b" : "w";
+  setClock($("opponent-clock"), topColor);
+  setClock($("me-clock"), bottomColor);
+}
+
+function tick() {
+  if (!data) return;
+  renderClocks();
+  if (data.status === "active" && data.timeBase > 0 && me && remaining(data.turn) <= 0) {
+    if (Date.now() - lastFlagTry > 1500) {
+      lastFlagTry = Date.now();
+      flagTimeout(gameId, data).catch(() => {});
+    }
+  }
 }
 
 /* ---------- Screen updates ---------- */
@@ -138,8 +219,8 @@ function nameOf(color) {
 function renderPlayers() {
   const topColor = board.flipped ? "w" : "b";
   const bottomColor = topColor === "w" ? "b" : "w";
-  $("opponent-bar").textContent = nameOf(topColor);
-  $("me-bar").textContent = nameOf(bottomColor);
+  $("opponent-name").textContent = nameOf(topColor);
+  $("me-name").textContent = nameOf(bottomColor);
 }
 
 function renderMoves() {
@@ -232,6 +313,7 @@ $("btn-flip").addEventListener("click", () => {
   if (data) {
     renderPlayers();
     renderCaptured();
+    renderClocks();
   }
 });
 
