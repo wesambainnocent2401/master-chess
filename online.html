@@ -18,14 +18,23 @@
     </div>
   </nav>
 
-  <!-- Lobby: create a game -->
+  <!-- Lobby: create a game or find one -->
   <main class="container page hidden" id="lobby">
     <div class="card auth-card" style="margin:0 auto">
       <h2>Play online</h2>
-      <p class="muted" style="margin-bottom:16px">Create a game, then share the link with a friend.</p>
+      <p class="muted" style="margin-bottom:16px">Find an opponent automatically, or create a game and share the link.</p>
 
       <div class="form-group">
-        <label for="color-choice">I want to play</label>
+        <label for="time-select">Time control</label>
+        <select class="input" id="time-select"></select>
+      </div>
+
+      <button class="btn btn-primary btn-block" id="btn-quick" type="button">Quick match</button>
+
+      <hr style="border:none;border-top:1px solid var(--border);margin:20px 0">
+
+      <div class="form-group">
+        <label for="color-choice">Play a friend as</label>
         <select class="input" id="color-choice">
           <option value="random">Random color</option>
           <option value="w">White</option>
@@ -33,12 +42,7 @@
         </select>
       </div>
 
-      <div class="form-group">
-        <label for="time-select">Time control</label>
-        <select class="input" id="time-select"></select>
-      </div>
-
-      <button class="btn btn-primary btn-block" id="btn-create" type="button">Create game</button>
+      <button class="btn btn-secondary btn-block" id="btn-create" type="button">Create game for a friend</button>
     </div>
   </main>
 
@@ -62,9 +66,10 @@
       <div class="status-bar" id="status">Loading...</div>
 
       <div class="card hidden" id="share-box">
-        <p class="muted" style="margin-bottom:8px">Waiting for an opponent. Send them this link:</p>
+        <p class="muted" id="share-text" style="margin-bottom:8px"></p>
         <input class="input" id="share-link" type="text" readonly>
         <button class="btn btn-primary btn-block" id="btn-copy" type="button" style="margin-top:10px">Copy link</button>
+        <button class="btn btn-secondary btn-block hidden" id="btn-cancel" type="button" style="margin-top:10px">Cancel game</button>
       </div>
 
       <div class="card hidden" id="draw-box">
