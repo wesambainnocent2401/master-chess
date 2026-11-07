@@ -4,8 +4,11 @@ import {
   addDoc,
   doc,
   getDoc,
+  getDocs,
   updateDoc,
   onSnapshot,
+  query,
+  where,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { Chess } from "https://cdn.jsdelivr.net/npm/chess.js@1.0.0-beta.8/+esm";
@@ -35,7 +38,7 @@ export function myColor(game, uid) {
 }
 
 /* ---------- Create a game and get its id ---------- */
-export async function createGame(colorChoice, timeControl) {
+export async function createGame(colorChoice, timeControl, isPublic) {
   const user = currentUser();
   const tc = timeControl || TIME_CONTROLS[0];
   let color = colorChoice;
@@ -61,6 +64,7 @@ export async function createGame(colorChoice, timeControl) {
     whiteTime: tc.base * 1000,
     blackTime: tc.base * 1000,
     clockStart: null,
+    isPublic: !!isPublic,
     createdAt: serverTimestamp()
   });
   return ref.id;
@@ -93,6 +97,64 @@ export async function joinGame(gameId) {
       clockStart: serverTimestamp()
     });
   }
+}
+
+/* ---------- Quick match: join someone waiting, or wait for someone ---------- */
+export async function quickMatch(timeControl) {
+  const user = currentUser();
+  const tc = timeControl || TIME_CONTROLS[4];
+
+  const q = query(
+    collection(db, "games"),
+    where("isPublic", "==", true),
+    where("status", "==", "waiting"),
+    where("timeBase", "==", tc.base),
+    where("timeInc", "==", tc.inc)
+  );
+  const snap = await getDocs(q);
+
+  const now = Date.now();
+  const candidates = [];
+  snap.forEach((d) => {
+    const g = d.data();
+    const created = g.createdAt ? g.createdAt.toMillis() : 0;
+    // Ignore your own games and games that have been waiting too long
+    if (g.creator !== user.uid && now - created < 120000) {
+      candidates.push({ id: d.id, created: created });
+    }
+  });
+  candidates.sort((a, b) => a.created - b.created);
+
+  for (const c of candidates) {
+    try {
+      await joinGame(c.id);
+      return c.id;
+    } catch (err) {
+      // someone else got there first, try the next one
+    }
+  }
+  return await createGame("random", tc, true);
+}
+
+export async function cancelGame(gameId) {
+  await updateDoc(doc(db, "games", gameId), { status: "cancelled" });
+}
+
+/* ---------- My games (for the dashboard history) ---------- */
+function createdMs(g) {
+  return g.createdAt ? g.createdAt.toMillis() : 0;
+}
+
+export async function listMyGames(uid) {
+  const [asWhite, asBlack] = await Promise.all([
+    getDocs(query(collection(db, "games"), where("white", "==", uid))),
+    getDocs(query(collection(db, "games"), where("black", "==", uid)))
+  ]);
+  const all = new Map();
+  [asWhite, asBlack].forEach((snap) => {
+    snap.forEach((d) => all.set(d.id, Object.assign({ id: d.id }, d.data())));
+  });
+  return Array.from(all.values()).sort((x, y) => createdMs(y) - createdMs(x));
 }
 
 /* ---------- Live updates ---------- */
@@ -207,4 +269,4 @@ export async function flagTimeout(gameId, game) {
     result: game.turn === "w" ? "0-1" : "1-0",
     reason: "timeout"
   });
-                                 }
+}
