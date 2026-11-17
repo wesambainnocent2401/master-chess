@@ -284,4 +284,117 @@ function missingPieces(color) {
     const lower = ch.toLowerCase();
     if (counts[lower] === undefined) continue;
     const pieceColor = ch === ch.toUpperCase() ? "w" : "b";
-    if (pieceColor === color) c
+    if (pieceColor === color) counts[lower]++;
+  }
+  const result = [];
+  ORDER.forEach((type) => {
+    const gone = Math.max(0, START_COUNT[type] - counts[type]);
+    for (let i = 0; i < gone; i++) result.push(type);
+  });
+  return result;
+}
+
+function fillCaptured(el, pieces, pieceColor) {
+  el.innerHTML = "";
+  pieces.forEach((type) => {
+    const span = document.createElement("span");
+    span.className = pieceColor;
+    span.textContent = glyph(type);
+    el.appendChild(span);
+  });
+}
+
+function renderCaptured() {
+  const topColor = board.flipped ? "w" : "b";
+  const bottomColor = topColor === "w" ? "b" : "w";
+  fillCaptured($("captured-top"), missingPieces(bottomColor), bottomColor);
+  fillCaptured($("captured-bottom"), missingPieces(topColor), topColor);
+}
+
+function renderBoxes() {
+  const waiting = data.status === "waiting";
+  $("share-box").classList.toggle("hidden", !waiting);
+  if (waiting) {
+    $("share-link").value =
+      window.location.origin + window.location.pathname + "?game=" + gameId;
+    $("share-text").textContent = data.isPublic
+      ? "Looking for an opponent. You can also send this link to a friend:"
+      : "Waiting for an opponent. Send them this link:";
+    $("btn-cancel").classList.toggle("hidden", data.creator !== uid);
+  }
+
+  const offered = data.status === "active" && !!me && data.drawOffer && data.drawOffer !== me;
+  $("draw-box").classList.toggle("hidden", !offered);
+  if (offered) $("draw-text").textContent = "Your opponent offers a draw.";
+
+  const active = data.status === "active" && !!me;
+  $("btn-resign").disabled = !active;
+  $("btn-draw").disabled = !active || data.drawOffer === me;
+  $("btn-draw").textContent = data.drawOffer === me ? "Draw offered" : "Offer draw";
+}
+
+/* ---------- Buttons ---------- */
+$("btn-flip").addEventListener("click", () => {
+  board.flip();
+  if (data) {
+    renderPlayers();
+    renderCaptured();
+    renderClocks();
+  }
+});
+
+$("btn-copy").addEventListener("click", async () => {
+  const input = $("share-link");
+  try {
+    await navigator.clipboard.writeText(input.value);
+    showToast("Link copied!", "success");
+  } catch (err) {
+    input.select();
+    showToast("Press and hold the link to copy it.");
+  }
+});
+
+$("btn-cancel").addEventListener("click", async () => {
+  try {
+    await cancelGame(gameId);
+    window.location.href = "online.html";
+  } catch (err) {
+    showToast("Could not cancel. Someone may have just joined.", "error");
+  }
+});
+
+$("btn-resign").addEventListener("click", async () => {
+  if (!data || data.status !== "active") return;
+  if (!confirm("Do you want to resign?")) return;
+  try {
+    await resignGame(gameId, data);
+  } catch (err) {
+    showToast("Could not resign. Try again.", "error");
+  }
+});
+
+$("btn-draw").addEventListener("click", async () => {
+  try {
+    await offerDraw(gameId, data);
+    showToast("Draw offered.");
+  } catch (err) {
+    showToast("Could not offer a draw.", "error");
+  }
+});
+
+$("btn-accept-draw").addEventListener("click", async () => {
+  try {
+    await acceptDraw(gameId);
+  } catch (err) {
+    showToast("Could not accept the draw.", "error");
+  }
+});
+
+/* ---------- Start (logged-in players only) ---------- */
+requireAuth((user) => {
+  if (started) return;
+  started = true;
+  uid = user.uid;
+  if (gameId) startGame();
+  else startLobby();
+});
