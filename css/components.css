@@ -238,3 +238,22 @@ select.input { appearance: auto; }
   font-weight: 700;
   width: fit-content;
 }
+/* Game history */
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-weight: 400;
+}
+.history-row:last-child { border-bottom: none; }
+.history-row:hover { text-decoration: none; background: var(--surface-2); }
+.history-row .who { font-weight: 700; }
+.history-row .meta { color: var(--muted); font-size: 0.85rem; }
+.history-row .outcome { font-weight: 800; white-space: nowrap; }
+.result-won { color: var(--success); }
+.result-lost { color: var(--danger); }
+.result-draw { color: var(--accent); }
